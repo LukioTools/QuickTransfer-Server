@@ -41,11 +41,9 @@ function CreateUser(usr, password){
             uuid = crypto.randomUUID()
             db.run(`INSERT INTO users (pwd, usr) VALUES (?,?)`, [hash, usr], function(err){
                 if(err){
-                    console.error("Error inserting user:", err);
                     reject("Error inserting user");
                     return;
                 }
-                console.log("User inserted successfully.");
                 resolve("completed")
             });
         });            
