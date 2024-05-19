@@ -32,13 +32,14 @@ function CreateUser(usr, password){
     return new Promise((resolve, reject)=>{
         bcrypt.hash(password, 0, function(err, hash){
             if(err){
-                console.error("Error hashing password:", err);
-                resolve("failed hashing password")
+                console.log("failed hashing: " + err)
+                reject("failed hashing password")
                 return;
             }
             uuid = crypto.randomUUID()
-            db.run(`INSERT INTO users (pwd, usr) VALUES (?,?)`, [hash, usr], function(err){
-                if(err){
+            db.run(`INSERT INTO users (pwd, usr) VALUES (?,?)`, [hash, usr], function(err2){
+                if(err2){
+                    console.log("failed adding row" + err2)
                     reject("Error inserting user");
                     return;
                 }

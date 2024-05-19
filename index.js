@@ -14,15 +14,24 @@ const app = express()
 const PORT = process.env.PORT || 8080
 
 app.get('/singup', (req, res)=>{
-    UserDB.CreateUser(req.headers.username, req.headers.password)
+    console.log("username: " + req.headers.username + " password: " + req.headers.password)
+    UserDB.CreateUser(req.headers.username, req.headers.password).then((mess)=>{
+        res.status(200).send(mess)
+    })
+    .catch((err) =>{
+        res.status(401).send(err);
+    })
 })
 
 app.get('/verifyUser', async(req, res)=>{
     console.log("loginin: " + req.headers.username + " : " + req.headers.password)
     if(req.headers.username && req.headers.password) {
         const isValid = await UserDB.VerifyUser(req.headers.username, req.headers.password);
-        if (isValid)
+        if (isValid){
             res.status(200).send("authentication succeed")
+            return
+        }
+        
     }
     res.status(401).send("failed")
 })
