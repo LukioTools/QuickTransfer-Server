@@ -8,28 +8,30 @@ UserDB.Connect("users.db")
 const app = express();
 const PORT = process.env.PORT || 8080;
 
+app.get('/singup', (req, res)=>{
+    UserDB.CreateUser(req.headers.username, req.headers.password)
+})
+
+app.get('/verifyUser', async(req, res)=>{
+    const isValid = await UserDB.VerifyUser(req.headers.username, req.headers.password);
+    if (isValid)
+        res.status(200).send("authentication succeed")
+    res.status(401).send(failed)
+})
+
 // Route to handle file upload
 app.post('/postback', async(req, res) => {
-    console.log(req.headers.cookie)
-    console.log(req.headers.key)
-    const isValid = await UserDB.VerifyUser(req.headers.key);
-
+    console.log("username: " + req.headers.username + " password: " + req.headers.password)
+    
+    const isValid = await UserDB.VerifyUser(req.headers.username, req.headers.password);
     if(isValid)
     {
-        console.log("validate: " + req.headers.validate)
-        if(req.headers.validate){
-            console.log("validates")
-            res.send("correct Key")
-            return
-        }
-
-        var name = req.headers.cookie;
+        var name = req.headers.name;
         const fileStream = fs.createWriteStream(path.join(__dirname, "/uploads/", name))
         req.pipe(fileStream)
-        res.send("done")
+        res.send("upload succesfully")
     }else{
-        console.log("key auth failed")
-        res.status(401).send("key fucked")
+        res.status(401).send("authentication failed")
     }
 });
 

@@ -15,8 +15,8 @@ function CreateUserTable(){
     CREATE TABLE users
     (
         ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        UUID varchar(36) NOT NULL UNIQUE,
-        key varchar(500) NOT NULL UNIQUE
+        USR varchar(36) NOT NULL UNIQUE,
+        PWD varchar(500) NOT NULL UNIQUE
     )
     `, function(err){
         if(err)
@@ -30,78 +30,45 @@ function DropUserTable(){
     `)
 }
 
-function CreateUser(password){
+function CreateUser(usr, password){
     return new Promise((resolve, reject)=>{
         bcrypt.hash(password, 0, function(err, hash){
             if(err){
                 console.error("Error hashing password:", err);
+                resolve("failed hashing password")
                 return;
             }
             uuid = crypto.randomUUID()
-            db.run(`INSERT INTO users (key, UUID) VALUES (?,?)`, [hash, uuid], function(err){
+            db.run(`INSERT INTO users (PWD, USR) VALUES (?,?)`, [hash, usr], function(err){
                 if(err){
                     console.error("Error inserting user:", err);
                     reject("Error inserting user");
                     return;
                 }
                 console.log("User inserted successfully.");
-                resolve(uuid)
+                resolve("completed")
             });
         });            
     })
 }
 
-function VerifyUser(pwd){
-    return new Promise((resolve, reject) => {
-        db.all("SELECT * FROM users", function(err, rows) {
-            if (err) {
-                console.log("database error:", err);
-                reject(err); // Reject the promise if there's a database error
-                return;
-            }
-    
-            console.log("finding");
+// 1: successfull
+// 0: usermame or password is incorrect 
 
-            found = 0
-    
-            let comparisonCount = 0; // Track the number of comparisons made
-    
-            for (const user of rows) {
-                console.log("pwd: " + pwd + " key: " + user.key);
-                bcrypt.compare(pwd, user.key, function(err, result) {
-                    if (err) {
-                        console.log("error while comparing keys:", err);
-                        found = 1
-                        reject(err); // Reject the promise if there's a comparison error
-                        return;
-                    }
-                    
-                    console.log(result);
-    
-                    if (result) {
-                        found = 1
-                        resolve(user.ID); // Resolve the promise with the user ID if the password matches
-                        return;
-                    }
-    
-                    comparisonCount++; // Increment the comparison count
-    
-                    if (comparisonCount === rows.length) {
-                        // If all comparisons have been made and none matched, resolve with -1
-                        found = 1
-                        resolve(-1);
-                        return;
-                    }
-                });
-            }
-        });
-    });
-    
-}
-
-function VerifyUserV2(uuid, pwd){
-    db.run('SELECT * FROM users WHERE UUID=?', [uuid], function(err, usr){
-        console.log(usr)
+function VerifyUser(USR, PWD){
+    return new Promise((res, rej)=>{
+        db.get('SELECT * FROM users WHERE USR=?', [USR], function(err, usr){
+            if(err)
+                res(false)
+            console.log(usr)
+            bcrypt.compare(PWD, usr.PWD, function(err, valid){
+                if(err)
+                    res(false)
+                if(!valid)
+                    res(false)
+                res(true)
+            })
+        })
     })
 }
 
@@ -109,4 +76,4 @@ exports.Connect = Connect
 exports.CreateUserTable = CreateUserTable 
 exports.DropUserTable = DropUserTable 
 exports.CreateUser = CreateUser 
-exports.VerifyUser = VerifyUser 
+exports.VerifyUser = VerifyUser
