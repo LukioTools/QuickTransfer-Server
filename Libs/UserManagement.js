@@ -2,8 +2,6 @@ const bcrypt = require("bcrypt");
 const { verbose } = require("sqlite3");
 const sqlite3 = require('sqlite3').verbose();
 
-const crypto = require('crypto');
-
 let db 
 
 function Connect(name){
@@ -56,9 +54,9 @@ function VerifyUser(USR, PWD){
             if(err)
                 res(false)
             console.log(usr)
-            bcrypt.compare(PWD, usr.PWD, function(err, valid){
+            bcrypt.compare(PWD, usr.pwd, function(err, valid){
                 if(err)
-                    res(false)
+                    res({"status": false, "id": usr.id})
                 if(!valid)
                     res(false)
                 res(true)

@@ -13,8 +13,8 @@ function CreateFileTable(){
         CREATE TABLE files
         (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            usr_id INTEGER NOT NULL
-            file TEXT NOT NULL UNIQUE
+            usr_id INTEGER NOT NULL,
+            file TEXT NOT NULL UNIQUE,
             upload_timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `)
@@ -38,10 +38,16 @@ function CreateFile(user_id, file_name){
 
 function GetFiles(user_id){
     return new Promise((resolve, reject)=>{
-        db.all(`SELECT usr_id, file, upload_timestamp FROM files WHERE usr_id=?`, [user_id], function(err, files){
+        db.all(`SELECT file, upload_timestamp FROM files WHERE usr_id=?`, [user_id], function(err, files){
             if(err)
                 reject("sqlite failed: " + err);
             resolve(files);
         });
     });
 }
+
+exports.Connect = Connect
+exports.CreateFileTable = CreateFileTable
+exports.DropUserTable = DropUserTable
+exports.CreateFile = CreateFile
+exports.GetFiles = GetFiles
