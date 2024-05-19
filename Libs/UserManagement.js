@@ -14,18 +14,14 @@ function CreateUserTable(){
     db.run(`
     CREATE TABLE users
     (
-        ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        USR varchar(36) NOT NULL UNIQUE,
-        PWD varchar(500) NOT NULL UNIQUE
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        usr TEXT NOT NULL UNIQUE,
+        pwd TEXT NOT NULL UNIQUE
     )
     `, function(err){
         if(err)
             console.log("table is there already: " + err)
     })
-}
-
-function CreateUserDB(){
-    
 }
 
 function DropUserTable(){
@@ -43,7 +39,7 @@ function CreateUser(usr, password){
                 return;
             }
             uuid = crypto.randomUUID()
-            db.run(`INSERT INTO users (PWD, USR) VALUES (?,?)`, [hash, usr], function(err){
+            db.run(`INSERT INTO users (pwd, usr) VALUES (?,?)`, [hash, usr], function(err){
                 if(err){
                     console.error("Error inserting user:", err);
                     reject("Error inserting user");
@@ -58,7 +54,7 @@ function CreateUser(usr, password){
 
 function VerifyUser(USR, PWD){
     return new Promise((res, rej)=>{
-        db.get('SELECT * FROM users WHERE USR=?', [USR], function(err, usr){
+        db.get('SELECT * FROM users WHERE usr=?', [USR], function(err, usr){
             if(err)
                 res(false)
             console.log(usr)

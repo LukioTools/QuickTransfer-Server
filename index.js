@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const UserDB = require('./Libs/UserManagement.js');
-UserDB.Connect("users.db")
+UserDB.Connect("DBs/users.db")
 
 const app = express();
 const PORT = process.env.PORT || 8080;
