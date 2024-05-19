@@ -24,6 +24,10 @@ function CreateUserTable(){
     })
 }
 
+function CreateUserDB(){
+    
+}
+
 function DropUserTable(){
     db.run(`
         DROP TABLE users;
@@ -51,9 +55,6 @@ function CreateUser(usr, password){
         });            
     })
 }
-
-// 1: successfull
-// 0: usermame or password is incorrect 
 
 function VerifyUser(USR, PWD){
     return new Promise((res, rej)=>{
