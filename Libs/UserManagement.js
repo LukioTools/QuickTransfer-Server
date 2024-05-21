@@ -53,14 +53,15 @@ function VerifyUser(USR, PWD){
     return new Promise((res, rej)=>{
         db.get('SELECT * FROM users WHERE usr=?', [USR], function(err, usr){
             if(err)
-                res(false)
-            console.log(usr)
+                res({status: false, id: usr.id})
             bcrypt.compare(PWD, usr.pwd, function(err, valid){
-                if(err)
-                    res({"status": false, "id": usr.id})
-                if(!valid)
-                    res(false)
-                res(true)
+                if(err){
+                    res({status: false, id: usr.id})
+                }
+                if(!valid){
+                    res({status: false, id: usr.id})
+                }
+                res({status: true, id: usr.id})
             })
         })
     })

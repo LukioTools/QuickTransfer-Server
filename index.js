@@ -25,9 +25,13 @@ app.get('/singup', (req, res)=>{
 
 app.get('/verifyUser', async(req, res)=>{
     console.log("loginin: " + req.headers.username + " : " + req.headers.password)
+    console.log(req.headers)
     if(req.headers.username && req.headers.password) {
+        console.log("1")
         const isValid = await UserDB.VerifyUser(req.headers.username, req.headers.password);
-        if (isValid){
+        console.log(isValid.status)
+        if (isValid.status){
+            console.log("correct usr credentials")
             res.status(200).send("authentication succeed")
             return
         }
